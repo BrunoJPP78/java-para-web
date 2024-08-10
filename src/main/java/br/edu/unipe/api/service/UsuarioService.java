@@ -1,5 +1,6 @@
 package br.edu.unipe.api.service;
 
+import br.edu.unipe.api.exceptions.ResourceNotFoundException;
 import br.edu.unipe.api.model.Usuario;
 import br.edu.unipe.api.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +44,14 @@ public class UsuarioService {
     public Usuario buscarPorEmail(String email) {
         var usuario = repository.buscarPorEmail(email);
         if (Objects.isNull(usuario))
-            throw new RuntimeException("Email não localizado.");
+            throw new ResourceNotFoundException("Email não localizado." +email);
 
         return usuario;
     }
 
     private void validarExistenciaId(Integer id){
         if(Objects.isNull(id) || !repository.existsById(id)){ // O duplo pipe é o "Ou" ||
-            throw new RuntimeException("Usuário não existe para o id "+id);
+            throw new ResourceNotFoundException("Usuário não existe para o id "+id);
         }
     }
 
