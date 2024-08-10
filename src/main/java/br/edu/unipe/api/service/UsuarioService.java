@@ -2,9 +2,11 @@ package br.edu.unipe.api.service;
 
 import br.edu.unipe.api.exceptions.ResourceNotFoundException;
 import br.edu.unipe.api.model.Usuario;
+import br.edu.unipe.api.model.dto.UsuarioDTO;
 import br.edu.unipe.api.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,22 +19,25 @@ import java.util.Objects;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final ModelMapper modelMapper;
 
     public List<Usuario> listarUsuarios() {
         return repository.findAll();
     }
 
-    public Usuario salvar(Usuario usuario) {
-        return repository.save(usuario);
+    public UsuarioDTO salvar(UsuarioDTO UsuarioDto) {
+        var usuario = repository.save(convertToEntity((UsuarioDto)));
+        return convertToDto(usuario);
     }
 
-    public Usuario consultar(Integer id){
+    public UsuarioDTO consultar(Integer id){
         validarExistenciaId(id);
-        return repository.findById(id).get();
+        return convertToDto(repository.findById(id).get());
     }
-    public Usuario alterar(Usuario usuario) {
-        validarExistenciaId(usuario.getId());
-        return repository.save(usuario);
+    public UsuarioDTO alterar(UsuarioDTO usuarioDTO) {
+        validarExistenciaId(usuarioDTO.getId());
+        var usuario = repository.save(convertToEntity(usuarioDTO));
+        return convertToDto(usuario);
     }
 
     public void deletar(@PathVariable Integer id) {
@@ -54,6 +59,14 @@ public class UsuarioService {
             throw new ResourceNotFoundException("Usuário não existe para o id "+id);
         }
     }
+
+    public UsuarioDTO convertToDto(Usuario user){
+        return modelMapper.map(user, UsuarioDTO.class);
+    }
+    public Usuario convertToEntity(UsuarioDTO userDTO){
+        return modelMapper.map(userDTO, Usuario.class);
+    }
+
 
 }
 
