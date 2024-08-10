@@ -1,5 +1,6 @@
 package br.edu.unipe.api.model;
 
+import br.edu.unipe.api.validation.EmailValidation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class Usuario {
 
     @Email(message = "O email não está na formatação correta")
     @Column(name = "email")
+    @EmailValidation
     private String email;
 
     private String nome;
